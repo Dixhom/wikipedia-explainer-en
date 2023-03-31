@@ -165,7 +165,7 @@ def get_chatgpt_content(keyword, speaker1, speaker2):
     openai.api_key = get_openai_apikey()
 
     content = '''# Order
-Search "{0}" from Wikipedia and explain the contents of the article in a conversational format in which two girls named {1} and {2} ask and answer questions. Greetings are not necessary. They talk like best friends and teenagers. The output should be a json format.
+Search "{0}" from Wikipedia and explain the contents of the article in a conversational format in which two girls named {1} and {2} ask and answer questions. Greetings are not necessary. They talk like best friends and teenagers. Make sure the conversation is interesting and enjoyable to the reader. The output should be a json format.
 
 # Json format
 [
