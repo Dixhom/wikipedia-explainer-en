@@ -4,7 +4,7 @@ import os
 
 import streamlit as st
 import streamlit.components.v1 as stc
-import openai
+from openai import OpenAI
 
 # strings to assign html related stuffs to
 css = '''<style>
@@ -162,7 +162,10 @@ def get_openai_apikey():
 
 def get_chatgpt_content(keyword, speaker1, speaker2):
     """get the summary of a Wikipedia article in a json format"""
-    openai.api_key = get_openai_apikey()
+    client = OpenAI(
+      api_key=get_openai_apikey(),  # this is also the default, it can be omitted
+    )
+    
 
     content = '''# Order
 Search "{0}" from Wikipedia and explain the contents of the article in a conversational format in which two girls named {1} and {2} ask and answer questions. Greetings are not necessary. They talk like best friends and teenagers. Make sure the conversation is interesting and enjoyable to the reader. The output should be a json format.
@@ -251,6 +254,8 @@ def main():
             stc.html(divs, height=800, scrolling=True)
         except:
             st.error('Error! Try again.')
+            print('######## ERROR ########')
+            print(ex)
         finally:
             # Enable buttons after process
             search_btn_ph.button('Search', disabled=False, key='5')
