@@ -256,7 +256,7 @@ def main():
             divs = divs.replace('\n\n', '\n')
             st.subheader(keyword)
             stc.html(divs, height=800, scrolling=True)
-        except:
+        except Exception as ex:
             st.error('Error! Try again.')
             print('######## ERROR ########')
             print(ex)
