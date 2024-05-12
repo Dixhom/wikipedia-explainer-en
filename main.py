@@ -18,7 +18,8 @@ def version_check(required, current):
   else:
       print("The version is compatible.")
 
-version_check("1.28.1", openai.__version__)
+ov = openai.__version__
+version_check("1.28.1", ov)
 version_check("1.20.0", st.__version__)
 # version_check("3.20.1", protobuf.__version__)
 
