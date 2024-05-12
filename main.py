@@ -257,9 +257,11 @@ def main():
             st.subheader(keyword)
             stc.html(divs, height=800, scrolling=True)
         except Exception as ex:
-            st.error('Error! Try again.')
-            print('######## ERROR ########')
-            print(ex)
+            st.error(f'''Error! Try again.
+'######## ERROR ########'
+{ex}
+{ex.__traceback__}
+''')
         finally:
             # Enable buttons after process
             search_btn_ph.button('Search', disabled=False, key='5')
