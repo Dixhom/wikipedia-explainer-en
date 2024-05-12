@@ -181,13 +181,13 @@ Search "{0}" from Wikipedia and explain the contents of the article in a convers
 # Output
 '''.format(keyword, speaker1, speaker2)
 
-    response = openai.ChatCompletion.create(
+    completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "user", "content": content},
         ]
     )
-    jsontxt = response["choices"][0]["message"]["content"]
+    jsontxt = completion.choices[0].message.content
     return json.loads(jsontxt)
 
 def get_random_wiki_article():
