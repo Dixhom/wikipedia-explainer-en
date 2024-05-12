@@ -4,7 +4,11 @@ import os
 
 import streamlit as st
 import streamlit.components.v1 as stc
-from openai import OpenAI
+# import openai
+try:
+  from openai import OpenAI
+except Exception as ex:
+  print(ex)
 
 # strings to assign html related stuffs to
 css = '''<style>
@@ -153,7 +157,7 @@ def create_conversation_div(comments, speaker1, speaker2):
 
 def get_openai_apikey():
     """get openai api key"""
-    path = r'E:\secrets\openai_apikey.txt'
+    path = r'F:\secrets\openai_apikey.txt'
     if os.path.exists(path): # localhost
         with open(path, 'r') as f:
             return f.read().replace('\n', '')
