@@ -260,7 +260,7 @@ def main():
             st.error(f'''Error! Try again.
 '######## ERROR ########'
 {ex}
-{ex.__traceback__}
+{ex.__traceback__.__str__()}
 ''')
         finally:
             # Enable buttons after process
