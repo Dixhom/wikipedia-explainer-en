@@ -21,7 +21,7 @@ def version_check(required, current):
 try:
   from openai import OpenAI
 except Exception as ex:
-  os.write(1, str(ex) + str(ex.__traceback__))
+  os.write(1, str(ex))
 
 ov = openai.__version__
 version_check("1.28.1", ov)
