@@ -1,9 +1,27 @@
 import random
 import json
 import os
+from packaging import version # got version error
 
+import openai
 import streamlit as st
 import streamlit.components.v1 as stc
+import protobuf
+
+def version_check(required, current):
+  required_version = version.parse(required)
+  current_version = version.parse(current)
+
+  if current_version < required_version:
+      raise ValueError(f"Error: OpenAI version {current}"
+                      f" is less than the required version {required}")
+  else:
+      print("OpenAI version is compatible.")
+
+version_check("1.28.1", openai.__version__)
+version_check("1.20.0", st.__version__)
+version_check("3.20.1", protobuf.__version__)
+
 from openai import OpenAI
 
 # strings to assign html related stuffs to
