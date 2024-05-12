@@ -18,12 +18,14 @@ def version_check(required, current):
   else:
       print("The version is compatible.")
 
+from openai import OpenAI
+
 ov = openai.__version__
 version_check("1.28.1", ov)
 version_check("1.20.0", st.__version__)
 # version_check("3.20.1", protobuf.__version__)
 
-from openai import OpenAI
+
 
 # strings to assign html related stuffs to
 css = '''<style>
