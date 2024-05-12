@@ -4,11 +4,7 @@ import os
 
 import streamlit as st
 import streamlit.components.v1 as stc
-# import openai
-try:
-  from openai import OpenAI
-except Exception as ex:
-  print(ex)
+from openai import OpenAI
 
 # strings to assign html related stuffs to
 css = '''<style>
@@ -258,9 +254,9 @@ def main():
             stc.html(divs, height=800, scrolling=True)
         except Exception as ex:
             st.error(f'''Error! Try again.
-'######## ERROR ########'
-{ex}
-{ex.__traceback__.__str__()}
+'######## ERROR ########'\n
+{ex}\n
+{ex.__traceback__.__str__()}\n
 ''')
         finally:
             # Enable buttons after process
