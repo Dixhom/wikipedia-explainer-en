@@ -1,34 +1,11 @@
 import random
 import json
 import os
-from packaging import version # got version error
+import traceback
 
-import openai
 import streamlit as st
 import streamlit.components.v1 as stc
-# import protobuf
-
-def version_check(required, current):
-  required_version = version.parse(required)
-  current_version = version.parse(current)
-
-  if current_version < required_version:
-      raise ValueError(f"Error: OpenAI version {current}"
-                      f" is less than the required version {required}")
-  else:
-      print("The version is compatible.")
-
-try:
-  from openai import OpenAI
-except Exception as ex:
-  os.write(1, str(ex))
-
-ov = openai.__version__
-version_check("1.28.1", ov)
-version_check("1.20.0", st.__version__)
-# version_check("3.20.1", protobuf.__version__)
-
-
+from openai import OpenAI
 
 # strings to assign html related stuffs to
 css = '''<style>
@@ -161,7 +138,7 @@ div_my = '''
 def create_conversation_div(comments, speaker1, speaker2):
     """create conversation html"""
     person_divs = []
-    # 会話のjsonをイテレートして処理
+    # iterate through a json object of conversation
     for comment in comments:
         if comment['speaker'] == speaker1:
             person_divs.append(div_friend.replace('<txt/>', comment['comment']))
@@ -169,30 +146,31 @@ def create_conversation_div(comments, speaker1, speaker2):
             person_divs.append(div_my.replace('<txt/>', comment['comment']))
         else:
             person_divs.append(div_my.replace('<txt/>', comment['comment']))
-    # 結合
+    # join
     person_txt = ''.join(person_divs) + '\n'
-    # はめ込み
+    # assign
     divs = div_base.replace('<conversation/>', person_txt)
     return html.replace('<divs/>', divs)
 
 def get_openai_apikey():
-    """get openai api key"""
+    """get openAI api key"""
     path = r'F:\secrets\openai_apikey.txt'
     if os.path.exists(path): # localhost
+        print('get_openai_apikey() local key chosen')
         with open(path, 'r') as f:
             return f.read().replace('\n', '')
     else: # streamlit server
+        print('get_openai_apikey() online streamlit key chosen')
         return st.secrets.OpenaiApiKey.key
 
 def get_chatgpt_content(keyword, speaker1, speaker2):
-    """get the summary of a Wikipedia article in a json format"""
+    """chatGPTからウィキペディアの記事の要約をチャット形式でjsonで出力"""
+
     client = OpenAI(
       api_key=get_openai_apikey(),  # this is also the default, it can be omitted
     )
-    
-
     content = '''# Order
-Search "{0}" from Wikipedia and explain the contents of the article in a conversational format in which two girls named {1} and {2} ask and answer questions. Greetings are not necessary. They talk like best friends and teenagers. Make sure the conversation is interesting and enjoyable to the reader. The output should be a json format.
+Search "{0}" from Wikipedia and explain the contents of the article in a conversational format in which two girls named {1} and {2} ask and answer questions. Greetings are not necessary. They talk like best friends and teenagers. Make sure the conversation is interesting and enjoyable to the reader. The output should be a json format. Make the output as long as possible.
 
 # Json format
 [
@@ -208,10 +186,11 @@ Search "{0}" from Wikipedia and explain the contents of the article in a convers
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
-            {"role": "user", "content": content},
-        ]
+              {"role": "user", "content": content},
+        ],
     )
     jsontxt = completion.choices[0].message.content
+
     return json.loads(jsontxt)
 
 def get_random_wiki_article():
@@ -236,7 +215,7 @@ def main():
 
     # search keyword input
     keyword_input = st.text_input(
-        '',
+        '  ',
         label_visibility=st.session_state.visibility,
         disabled=st.session_state.disabled,
         placeholder=st.session_state.placeholder,
@@ -245,25 +224,26 @@ def main():
 
     # search button
     search_btn_ph = st.empty()
-    search_btn = search_btn_ph.button('Search', disabled=False, key='1')
+    search_btn = search_btn_ph.button('Search', disabled=st.session_state.disabled)
 
     # random search button
     random_btn_ph = st.empty()
-    random_btn = random_btn_ph.button('Random', disabled=False, key='2')
+    random_btn = random_btn_ph.button('Random', disabled=st.session_state.disabled)
 
     # text for "processing now..."
     text_wait = st.empty()
 
     if search_btn or random_btn:
+        print('if search_btn or random_btn - hit') # debug
         # if no search keyword, cancel
         if search_btn and keyword.strip() == '':
             return
 
         # disable buttons while processing
-        search_btn_ph.button('Search', disabled=True, key='3')
-        random_btn_ph.button('Random', disabled=True, key='4')
+        st.session_state.disabled = True
         text_wait.markdown('**Loading now...**')
 
+        # select at random
         if random_btn:
             keyword = get_random_wiki_article()['title']
 
@@ -277,17 +257,14 @@ def main():
             st.subheader(keyword)
             stc.html(divs, height=800, scrolling=True)
         except Exception as ex:
-            st.error(f'''Error! Try again.
-'######## ERROR ########'\n
-{ex}\n
-{ex.__traceback__.__str__()}\n
-''')
+            st.error('Error! Try again.')
+            print('######## ERROR ########')
+            print(ex)
+            print(traceback.format_exc())
         finally:
-            # Enable buttons after process
-            search_btn_ph.button('Search', disabled=False, key='5')
-            random_btn_ph.button('Random', disabled=False, key='6')
+            # After all the processes are done, enable the buttons
+            st.session_state.disabled = False
             text_wait.empty()
-            st.write('If you search again, press "Search" or "Random" twice.')
         
 if __name__ == '__main__':
     main()
